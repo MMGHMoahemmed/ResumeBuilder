@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<!-- Set lang/dir dynamically if needed -->
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-translate="cover_letter_page_title">AI Cover Letter Writer</title>
+    <!-- Tabler CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@1.1.1/dist/css/tabler.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+    <link rel="stylesheet" href="Gemini.css">
+    <link href="/css/demo.min.css" rel="stylesheet"/>
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+      /* Simple preview styling */
+      #cover-letter-preview {
+        background-color: #fff;
+        padding: 2rem;
+        border: 1px solid #e5e7eb;
+        border-radius: 4px;
+        min-height: 400px; /* Ensure it has some height */
+        line-height: 1.6;
+        white-space: pre-wrap; /* Preserve line breaks from textarea */
+        font-family: sans-serif; /* Basic font */
+        box-shadow: 0 1px 3px 0 rgba(0,0,0,.1), 0 1px 2px -1px rgba(0,0,0,.1);
+      }
+      .sticky-preview {
+        position: sticky;
+        top: 20px; /* Adjust as needed */
+      }
+    </style>
+</head>
+<body data-bs-theme="light"> <!-- Theme set by JS -->
+    <div class="page">
+        <!-- Navbar -->
+        <header class="navbar navbar-expand-md d-print-none">
+           <div class="container-xl">
+            <!-- Navbar content - reuse from other pages -->
+             <h1 class="navbar-brand navbar-brand-autodark d-none-navbar-horizontal pe-0 pe-md-3">
+               <a href="." data-translate="navbar_title">ATS Resume Builder</a>
+             </h1>
+             <div class="navbar-nav flex-row order-md-last">
+               <div class="d-none d-md-flex">
+                 <a href="#" class="nav-link px-0 hide-theme-dark" title="Enable dark mode" data-bs-toggle="tooltip" data-bs-placement="bottom">...</a>
+                 <a href="#" class="nav-link px-0 hide-theme-light" title="Enable light mode" data-bs-toggle="tooltip" data-bs-placement="bottom">...</a>
+               </div>
+               <div class="nav-item dropdown">
+                 <a href="#" class="nav-link d-flex lh-1 text-reset p-0" data-bs-toggle="dropdown" aria-label="Open language menu">... Language ...</a>
+                 <div class="dropdown-menu dropdown-menu-end dropdown-menu-arrow" id="language-menu">...</div>
+               </div>
+               <!-- Maybe User Profile Dropdown later -->
+             </div>
+             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar-menu" aria-controls="navbar-menu" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+              </button>
+              <div class="collapse navbar-collapse" id="navbar-menu">
+                <div class="d-flex flex-column flex-md-row flex-fill align-items-stretch align-items-md-center">
+                  <ul class="navbar-nav">
+                    <!-- Links to other pages: My Resumes, Resume Builder, AI Trainer, Settings -->
+                    <li class="nav-item"><a class="nav-link" href="./MyResumes.html" data-translate="menu_my_resumes">My Resumes</a></li>
+                    <li class="nav-item"><a class="nav-link" href="./ResumeBuilder.html" data-translate="menu_Ai_Builder">Ai Builder</a></li>
+                    <li class="nav-item active"><a class="nav-link" href="./AiCoverLetter.html" data-translate="menu_cover_letter">Ai Cover Letter</a></li>
+                    <li class="nav-item"><a class="nav-link" href="./AiJobTrainer.html" data-translate="menu_Ai_Trainer">Ai Trainer</a></li>
+                    <li class="nav-item"><a class="nav-link" href="./Settings.html" data-translate="menu_Settings">Settings</a></li>
+                  </ul>
+                </div>
+              </div>
+           </div>
+        </header>
+
+        <!-- Page Wrapper -->
+        <div class="page-wrapper">
+            <!-- Page header -->
+            <div class="page-header d-print-none">
+                <div class="container-xl">
+                    <div class="row g-2 align-items-center">
+                        <div class="col">
+                            <h2 class="page-title" data-translate="cover_letter_page_title">AI Cover Letter Writer</h2>
+                        </div>
+                        <!-- Optional: Actions like Save, Download -->
+                         <div class="col-auto ms-auto d-print-none">
+                            <div class="btn-list">
+                                <button type="button" id="save-cl-btn" class="btn btn-success d-none d-sm-inline-block">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-device-floppy" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M6 4h10l4 4v10a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2" /><path d="M12 14m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" /><path d="M14 4l0 4l-6 0l0 -4" /></svg>
+                                    <span data-translate="cover_letter_button_save">Save Cover Letter</span>
+                                </button>
+                                <button type="button" id="download-cl-btn" class="btn btn-primary d-none d-sm-inline-block">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-download" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2 -2v-2" /><path d="M7 11l5 5l5 -5" /><path d="M12 4l0 12" /></svg>
+                                    <span data-translate="cover_letter_button_download">Download PDF</span>
+                                </button>
+                                <!-- Add Load/New later if needed -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Page body -->
+            <div class="page-body">
+                <div class="container-xl">
+                    <div class="row g-4">
+
+                        <!-- Input Column -->
+                        <div class="col-lg-6">
+                            <div class="row row-cards">
+                                <!-- Hidden ID -->
+                                <input type="hidden" id="current-cover-letter-id">
+
+                                <!-- Cover Letter Name -->
+                                <div class="col-12">
+                                    <div class="card">
+                                        <div class="card-body">
+                                             <label class="form-label" data-translate="cover_letter_label_name">Cover Letter Name / Title</label>
+                                             <input type="text" class="form-control" id="cover-letter-name" placeholder="e.g., Application for Software Engineer" data-translate="cover_letter_placeholder_name">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Job Info -->
+                                <div class="col-12">
+                                    <div class="card">
+                                        <div class="card-header"><h3 class="card-title" data-translate="cover_letter_title_job_info">Job Information</h3></div>
+                                        <div class="card-body">
+                                            <div class="mb-3">
+                                                <label class="form-label" data-translate="cover_letter_label_job_desc">Job Description</label>
+                                                <textarea class="form-control" id="job-description-input" rows="6" placeholder="Paste the job description here..." data-translate="cover_letter_placeholder_job_desc"></textarea>
+                                            </div>
+                                            <div class="row g-2">
+                                                <div class="col-md">
+                                                    <label class="form-label" data-translate="cover_letter_label_company">Company Name (Optional)</label>
+                                                    <input type="text" class="form-control" id="company-name-input" data-translate="cover_letter_placeholder_company">
+                                                </div>
+                                                 <div class="col-md">
+                                                    <label class="form-label" data-translate="cover_letter_label_hiring_manager">Hiring Manager (Optional)</label>
+                                                    <input type="text" class="form-control" id="hiring-manager-input" data-translate="cover_letter_placeholder_hiring_manager">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Input Type & AI Actions -->
+                                <div class="col-12">
+                                    <div class="card">
+                                        <div class="card-header"><h3 class="card-title" data-translate="cover_letter_title_ai_actions">AI Assistance</h3></div>
+                                        <div class="card-body">
+                                            <!-- Option 1: Generate from Job Desc -->
+                                            <div class="mb-3">
+                                                <button type="button" id="generate-cl-btn" class="btn btn-primary w-100">
+                                                     <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-sparkles" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M16 18a2 2 0 0 1 2 2a2 2 0 0 1 2 -2a2 2 0 0 1 -2 -2a2 2 0 0 1 -2 2zm0 -12a2 2 0 0 1 2 2a2 2 0 0 1 2 -2a2 2 0 0 1 -2 -2a2 2 0 0 1 -2 2zm-7 12a6 6 0 0 1 6 -6a6 6 0 0 1 -6 -6a6 6 0 0 1 -6 6a6 6 0 0 1 6 6z" /></svg>
+                                                    <span data-translate="cover_letter_button_generate">Generate from Job Description</span>
+                                                </button>
+                                            </div>
+
+                                            <hr class="my-3"> <!-- Separator -->
+
+                                            <!-- Option 2: Enhance Existing -->
+                                            <div>
+                                                <label class="form-label" data-translate="cover_letter_label_existing">Or Enhance Your Draft:</label>
+                                                <textarea class="form-control" id="existing-cover-letter-input" rows="6" placeholder="Paste your existing cover letter draft here..." data-translate="cover_letter_placeholder_existing"></textarea>
+                                                 <button type="button" id="enhance-cl-btn" class="btn btn-secondary w-100 mt-2">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-wand" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M6 21l15 -15l-3 -3l-15 15l3 3" /><path d="M15 6l3 3" /><path d="M9 3a2 2 0 0 0 2 2a2 2 0 0 0 -2 2a2 2 0 0 0 -2 -2a2 2 0 0 0 2 -2" /><path d="M19 13a2 2 0 0 0 2 2a2 2 0 0 0 -2 2a2 2 0 0 0 -2 -2a2 2 0 0 0 2 -2" /></svg>
+                                                    <span data-translate="cover_letter_button_enhance">Enhance Existing Letter</span>
+                                                </button>
+                                            </div>
+                                             <!-- Option 3: Generate from Resume (Add Later) -->
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Output -->
+                                <div class="col-12">
+                                    <div class="card">
+                                        <div class="card-header"><h3 class="card-title" data-translate="cover_letter_title_output">Generated Cover Letter</h3></div>
+                                        <div class="card-body">
+                                             <textarea class="form-control" id="generated-cover-letter-output" rows="15" placeholder="AI generated cover letter will appear here..." data-translate="cover_letter_placeholder_output"></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div><!-- /.row -->
+                        </div><!-- /.col-lg-6 -->
+
+                        <!-- Preview Column -->
+                        <div class="col-lg-6">
+                           <div class="sticky-preview"> <!-- Make preview sticky -->
+                               <div class="card">
+                                   <div class="card-header"><h3 class="card-title" data-translate="cover_letter_title_preview">Preview</h3></div>
+                                   <div class="card-body">
+                                       <div id="cover-letter-preview">
+                                           <!-- Preview content injected here -->
+                                       </div>
+                                   </div>
+                               </div>
+                           </div>
+                        </div><!-- /.col-lg-6 -->
+
+                    </div><!-- /.row g-4 -->
+                </div><!-- /.container-xl -->
+            </div><!-- /.page-body -->
+        </div><!-- /.page-wrapper -->
+    </div><!-- /.page -->
+
+    <!-- Notification Container (Ensure it's here or in layout) -->
+    <div id="notification-container" class="position-fixed top-0 end-0 p-3" style="z-index: 1100"></div>
+    <template id="notification-template">...</template> <!-- Reuse template -->
+
+    <!-- Tabler Core -->
+    <script src="https://cdn.jsdelivr.net/npm/@tabler/core@1.1.1/dist/js/tabler.min.js" defer></script>
+    <script src="/js/demo.min.js" defer></script>
+    <!-- Dexie -->
+    <script src="https://unpkg.com/dexie@latest/dist/dexie.js"></script>
+    <!-- App Logic -->
+    <script src="/js/config.js" defer></script>
+    <script src="/js/translation.js" defer></script>
+    <script src="/js/dexieApi.js" defer></script>
+    <script src="/js/aiAPI.js" defer></script>
+    <script src="/js/themeAndLanguage.js" defer></script>
+    <!-- Page Specific JS -->
+    <script src="/js/aiCoverLetter.js" defer></script>
+    <!-- Main JS -->
+    <script src="/js/main.js" defer></script>
+
+</body>
+</html>
